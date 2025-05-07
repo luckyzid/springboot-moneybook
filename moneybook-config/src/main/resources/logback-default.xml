@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 로그 패턴 정의 -->
+	<property name="CONSOLE_LOG_PATTERN"
+			  value="%green(%date) %highlight(%-5level) %yellow([%-4relative]) %magenta([%thread]) %cyan(%logger{10}) %gray([%file:%line]) %blue(: %msg%n)" />
+
+	<!-- DEBUG 이상 로그 출력 (TRACE 포함) -->
+	<appender name="DEBUG_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level> <!-- DEBUG 이상 출력 (TRACE 포함) -->
+		</filter>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- INFO 로그 출력 -->
+	<appender name="INFO_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- WARN과 ERROR 로그 출력 -->
+	<appender name="ERROR_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>WARN</level> <!-- WARN과 ERROR 출력 -->
+		</filter>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 애플리케이션 패키지 로그 (kr.money.book) -->
+	<logger name="kr.money.book" level="INFO" additivity="false">
+		<appender-ref ref="DEBUG_CONSOLE" />
+		<appender-ref ref="INFO_CONSOLE" />
+		<appender-ref ref="ERROR_CONSOLE" />
+	</logger>
+
+	<!-- 루트 로거 -->
+	<root level="DEBUG">
+		<appender-ref ref="DEBUG_CONSOLE" />
+		<appender-ref ref="INFO_CONSOLE" />
+		<appender-ref ref="ERROR_CONSOLE" />
+	</root>
+
+</configuration>

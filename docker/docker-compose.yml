@@ -1,0 +1,271 @@
+version: '3'
+
+networks:
+  moneybook-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.88.44.0/24
+
+services:
+  moneybook-cluster-master:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=master
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "13306:3306"
+    volumes:
+#      - ../../data/mysql-master:/bitnami/mysql/data
+      - ./mysql/scripts/:/docker-entrypoint-startdb.d/
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-cluster-slave:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    depends_on:
+      moneybook-cluster-master:
+        condition: service_healthy
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=slave
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_MASTER_HOST=moneybook-cluster-master
+      - MYSQL_MASTER_PORT_NUMBER=3306
+      - MYSQL_MASTER_ROOT_PASSWORD=local_rdb
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_REPLICATION_SLAVE_DUMP=false
+    ports:
+      - "23306:3306"
+#    volumes:
+#      - ../../data/mysql-slave:/bitnami/mysql/data
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-shard-0-master:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=master
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "33306:3306"
+    volumes:
+#      - ../../data/mysql-shard-0-master:/bitnami/mysql/data
+      - ./mysql/scripts/:/docker-entrypoint-startdb.d/
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-shard-0-slave:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    depends_on:
+      moneybook-shard-0-master:
+        condition: service_healthy
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=slave
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_MASTER_HOST=moneybook-shard-0-master
+      - MYSQL_MASTER_PORT_NUMBER=3306
+      - MYSQL_MASTER_ROOT_PASSWORD=local_rdb
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_REPLICATION_SLAVE_DUMP=false
+    ports:
+      - "43306:3306"
+#    volumes:
+#      - ../../data/mysql-shard-0-slave:/bitnami/mysql/data
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-shard-1-master:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=master
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "53306:3306"
+    volumes:
+#      - ../../data/mysql-shard-1-master:/bitnami/mysql/data
+      - ./mysql/scripts/:/docker-entrypoint-startdb.d/
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-shard-1-slave:
+    image: bitnami/mysql:8.4
+    networks:
+      - moneybook-network
+    depends_on:
+      moneybook-shard-1-master:
+        condition: service_healthy
+    restart: always
+    environment:
+      - MYSQL_REPLICATION_MODE=slave
+      - MYSQL_REPLICATION_USER=replicator
+      - MYSQL_REPLICATION_PASSWORD=replicator_password
+      - MYSQL_MASTER_HOST=moneybook-shard-1-master
+      - MYSQL_MASTER_PORT_NUMBER=3306
+      - MYSQL_MASTER_ROOT_PASSWORD=local_rdb
+      - MYSQL_ROOT_PASSWORD=local_rdb
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_REPLICATION_SLAVE_DUMP=false
+    ports:
+      - "63306:3306"
+#    volumes:
+#      - ../../data/mysql-shard-1-slave:/bitnami/mysql/data
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  moneybook-redis-cluster-mode:
+    image: grokzen/redis-cluster:7.0.15
+    networks:
+      - moneybook-network
+    restart: always
+    environment:
+      - IP=0.0.0.0
+      - BIND_ADDRESS=0.0.0.0
+      - INITIAL_PORT=7000
+      - MASTERS=3
+      - SLAVES_PER_MASTER=1
+    ports:
+      - "7000-7005:7000-7005"
+#    volumes:
+#      - ../../data/redis-cluster:/data
+
+  moneybook-redisson-cluster-mode:
+    image: grokzen/redis-cluster:7.0.15
+    networks:
+      - moneybook-network
+    restart: always
+    environment:
+      - IP=0.0.0.0
+      - BIND_ADDRESS=0.0.0.0
+      - INITIAL_PORT=7010
+      - MASTERS=3
+      - SLAVES_PER_MASTER=1
+    ports:
+      - "7010-7015:7010-7015"
+#    volumes:
+#      - ../../data/redisson-cluster:/data
+
+  moneybook-mongodb-1:
+    image: mongo:7.0
+    networks:
+      - moneybook-network
+    restart: always
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27017:27017"
+#    volumes:
+#      - ../../data/mongodb-1:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  moneybook-mongodb-2:
+    image: mongo:7.0
+    networks:
+      - moneybook-network
+    restart: always
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27018:27017"
+#    volumes:
+#      - ../../data/mongodb-2:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  moneybook-mongodb-3:
+    image: mongo:7.0
+    networks:
+      - moneybook-network
+    restart: always
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27019:27017"
+#    volumes:
+#      - ../../data/mongodb-3:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # /etc/hosts 추가 필요 - rs.initiate 설정에 moneybook-mongodb-1 moneybook-mongodb-2 moneybook-mongodb-3 사용중
+  # 127.0.0.1 moneybook-mongodb-1 moneybook-mongodb-2 moneybook-mongodb-3
+  moneybook-mongodb-init:
+    image: mongo:7.0
+    networks:
+      - moneybook-network
+    depends_on:
+      moneybook-mongodb-1:
+        condition: service_healthy
+      moneybook-mongodb-2:
+        condition: service_healthy
+      moneybook-mongodb-3:
+        condition: service_healthy
+    entrypoint: >
+      bash -c "
+      until mongosh --host moneybook-mongodb-1:27017 --eval 'db.runCommand(\"ping\")'; do
+        echo 'Waiting for moneybook-mongodb-1 to be ready...';
+        sleep 2;
+      done;
+      mongosh --host moneybook-mongodb-1:27017 --eval '
+        rs.initiate({
+          _id: \"rs0\",
+          members: [
+            { _id: 0, host: \"moneybook-mongodb-1:27017\" },
+            { _id: 1, host: \"moneybook-mongodb-2:27017\" },
+            { _id: 2, host: \"moneybook-mongodb-3:27017\" }
+          ]
+        });
+      ';
+      echo 'MongoDB Replica Set initialized.';"
+    restart: "no"

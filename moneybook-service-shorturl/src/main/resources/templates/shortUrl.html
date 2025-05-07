@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Short URL Redirect</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript">
+const redirectURL = "[(${redirectionUrl})]";
+if (redirectURL) {
+    location.replace(redirectURL);
+} else {
+    alert("Redirect url is empty.");
+}
+</script>
+<style type="text/css">
+.outer {
+    width : 100%;
+    height : 100%;
+}
+
+.inner {
+    top: 50%;
+    left: 50%;
+    width : 100%;
+    position: absolute;
+    margin: 0 0 0 0;
+}
+</style>
+</head>
+<body>
+<div class="outer">
+    <div class="inner">
+        <a th:utext="${redirectionUrl}" th:href="${redirectionUrl}"></a>
+    </div>
+</div>
+</body>
+</html>

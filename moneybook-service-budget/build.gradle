@@ -1,0 +1,29 @@
+jar.enabled = false
+
+dependencies {
+    implementation project(path: ':moneybook-config', configuration: 'default')
+    implementation project(path: ':moneybook-web', configuration: 'default')
+    implementation project(path: ':moneybook-authentication', configuration: 'default')
+    implementation project(path: ':moneybook-authentication-redis', configuration: 'default')
+    implementation project(path: ':moneybook-infra-rds', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redis', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redis-pubsub', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redisson', configuration: 'default')
+    implementation project(path: ':moneybook-infra-ehcache', configuration: 'default')
+    implementation project(path: ':moneybook-infra-ehcache-redisson', configuration: 'default')
+
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+}
+
+
+bootJar {
+    launchScript()
+    manifest {
+        attributes "Start-Class": "kr.money.book.BudgetApplication"
+    }
+}

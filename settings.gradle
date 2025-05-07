@@ -1,0 +1,23 @@
+rootProject.name = 'server-springboot'
+include 'moneybook-config'
+include 'moneybook-common'
+include 'moneybook-util'
+include 'moneybook-web'
+
+include 'moneybook-authentication'
+include 'moneybook-authentication-redis'
+
+include 'moneybook-infra-ehcache'
+include 'moneybook-infra-ehcache-redisson'
+include 'moneybook-infra-rds'
+include 'moneybook-infra-redis'
+include 'moneybook-infra-redis-pubsub'
+include 'moneybook-infra-redisson'
+include 'moneybook-infra-mongodb'
+
+include 'moneybook-service-user'
+include 'moneybook-service-account'
+include 'moneybook-service-category'
+include 'moneybook-service-budget'
+include 'moneybook-service-analyze'
+include 'moneybook-service-shorturl'

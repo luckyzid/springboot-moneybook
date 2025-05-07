@@ -1,0 +1,27 @@
+jar.enabled = false
+
+dependencies {
+    implementation project(path: ':moneybook-config', configuration: 'default')
+    implementation project(path: ':moneybook-web', configuration: 'default')
+    implementation project(path: ':moneybook-authentication', configuration: 'default')
+    implementation project(path: ':moneybook-infra-ehcache', configuration: 'default')
+    implementation project(path: ':moneybook-infra-mongodb', configuration: 'default')
+
+    implementation "com.github.ua-parser:uap-java:${uapJavaVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"
+
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testImplementation "org.testcontainers:mongodb:${testcontainersVersion}"
+    testImplementation "org.springframework:spring-jdbc"
+    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+}
+
+bootJar {
+    launchScript()
+    manifest {
+        attributes "Start-Class": "kr.money.book.ShortUrlApplication"
+    }
+}

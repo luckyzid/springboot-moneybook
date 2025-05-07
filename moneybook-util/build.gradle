@@ -1,0 +1,15 @@
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+    implementation "jakarta.servlet:jakarta.servlet-api:${jakartaServletApiVersion}"
+    implementation "io.jsonwebtoken:jjwt:${ioJsonwebtokenVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${ioJsonwebtokenVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${ioJsonwebtokenVersion}"
+    implementation "com.jayway.jsonpath:json-path:${jsonPathVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    implementation "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    implementation "javax.servlet:javax.servlet-api:${servletApiVersion}"
+}

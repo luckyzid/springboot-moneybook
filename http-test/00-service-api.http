@@ -1,0 +1,579 @@
+### 회원가입 (POST /user/register)
+POST {{user-host}}/user/register
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123",
+  "name": "TestUser"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Register Response: " + jsonString);
+  client.global.set("createEmail", response.body.data.email);
+%}
+
+### 이메일 로그인 (POST /user/login/email)
+POST {{user-host}}/user/login/email
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)
+
+{
+  "email": "{{createEmail}}",
+  "password": "password123"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accessToken", response.body.data.accessToken);
+  client.global.set("refreshToken", response.body.data.refreshToken);
+  client.global.set("userToken", response.body.data.userToken);
+  const tokens = {
+    accessToken: client.global.get("accessToken"),
+    refreshToken: client.global.get("refreshToken"),
+    userToken: client.global.get("userToken")
+  };
+  const tokenString = JSON.stringify(tokens, null, 2);
+  client.log("Tokens: " + tokenString);
+%}
+
+### 계정 추가 - A Card (POST /account)
+POST {{account-host}}/account
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "A Card",
+  "type": "CARD"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accountIdxACard", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add A Card Response: " + jsonString);
+  client.log("Saved accountIdxACard: " + client.global.get("accountIdxACard"));
+%}
+
+### 계정 추가 - B Card (POST /account)
+POST {{account-host}}/account
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "B Card",
+  "type": "CARD"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accountIdxBCard", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add B Card Response: " + jsonString);
+  client.log("Saved accountIdxBCard: " + client.global.get("accountIdxBCard"));
+%}
+
+### 계정 추가 - A Bank (POST /account)
+POST {{account-host}}/account
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "A Bank",
+  "type": "BANK"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accountIdxABank", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add A Bank Response: " + jsonString);
+  client.log("Saved accountIdxABank: " + client.global.get("accountIdxABank"));
+%}
+
+### 계정 추가 - B Bank (POST /account)
+POST {{account-host}}/account
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "B Bank",
+  "type": "BANK"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accountIdxBBank", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add B Bank Response: " + jsonString);
+  client.log("Saved accountIdxBBank: " + client.global.get("accountIdxBBank"));
+%}
+
+### 카테고리 추가 - 식비 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "식비",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxFood", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Food Category Response: " + jsonString);
+  client.log("Saved categoryIdxFood: " + client.global.get("categoryIdxFood"));
+%}
+
+### 카테고리 추가 - 주류비 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "주류비",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxAlcohol", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Alcohol Category Response: " + jsonString);
+  client.log("Saved categoryIdxAlcohol: " + client.global.get("categoryIdxAlcohol"));
+%}
+
+### 카테고리 추가 - 기본급 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "기본급",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxBaseSalary", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Base Salary Category Response: " + jsonString);
+  client.log("Saved categoryIdxBaseSalary: " + client.global.get("categoryIdxBaseSalary"));
+%}
+
+### 카테고리 추가 - 보너스 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "보너스",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxBonus", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Bonus Category Response: " + jsonString);
+  client.log("Saved categoryIdxBonus: " + client.global.get("categoryIdxBonus"));
+%}
+
+### 카테고리 추가 - 추가보너스 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "추가보너스",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxExtraBonus", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Extra Bonus Category Response: " + jsonString);
+  client.log("Saved categoryIdxExtraBonus: " + client.global.get("categoryIdxExtraBonus"));
+%}
+
+### 카테고리 추가 - 외식비 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "외식비",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("categoryIdxDining", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Dining Category Response: " + jsonString);
+  client.log("Saved categoryIdxDining: " + client.global.get("categoryIdxDining"));
+%}
+
+### 예산 추가 - 식비 (A Card) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 8000.00,
+  "comment": "마트 장보기",
+  "transactionDate": "2025-03-01 10:00:00",
+  "accountIdx": {{accountIdxACard}},
+  "categoryIdx": {{categoryIdxFood}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxFoodACard", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Food A Card Budget Response: " + jsonString);
+  client.log("Saved budgetIdxFoodACard: " + client.global.get("budgetIdxFoodACard"));
+%}
+
+### 예산 추가 - 식비 (B Card) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 5000.00,
+  "comment": "편의점 간식",
+  "transactionDate": "2025-03-02 15:00:00",
+  "accountIdx": {{accountIdxBCard}},
+  "categoryIdx": {{categoryIdxFood}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxFoodBCard", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Food B Card Budget Response: " + jsonString);
+  client.log("Saved budgetIdxFoodBCard: " + client.global.get("budgetIdxFoodBCard"));
+%}
+
+### 예산 추가 - 식비 (A Bank) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 12000.00,
+  "comment": "시장 장보기",
+  "transactionDate": "2025-03-03 09:00:00",
+  "accountIdx": {{accountIdxABank}},
+  "categoryIdx": {{categoryIdxFood}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxFoodABank", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Food A Bank Budget Response: " + jsonString);
+  client.log("Saved budgetIdxFoodABank: " + client.global.get("budgetIdxFoodABank"));
+%}
+
+### 예산 추가 - 주류비 (B Card) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 7000.00,
+  "comment": "맥주 구매",
+  "transactionDate": "2025-03-02 20:00:00",
+  "accountIdx": {{accountIdxBCard}},
+  "categoryIdx": {{categoryIdxAlcohol}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxAlcoholBCard", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Alcohol B Card Budget Response: " + jsonString);
+  client.log("Saved budgetIdxAlcoholBCard: " + client.global.get("budgetIdxAlcoholBCard"));
+%}
+
+### 예산 추가 - 외식비 (A Bank) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 15000.00,
+  "comment": "친구와 외식",
+  "transactionDate": "2025-03-04 18:00:00",
+  "accountIdx": {{accountIdxABank}},
+  "categoryIdx": {{categoryIdxDining}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxDiningABank", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Dining A Bank Budget Response: " + jsonString);
+  client.log("Saved budgetIdxDiningABank: " + client.global.get("budgetIdxDiningABank"));
+%}
+
+### 예산 추가 - 기본급 (B Bank) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "INCOME",
+  "amount": 400000.00,
+  "comment": "3월 기본급",
+  "transactionDate": "2025-03-01 09:00:00",
+  "accountIdx": {{accountIdxBBank}},
+  "categoryIdx": {{categoryIdxBaseSalary}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxBaseSalary", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Base Salary Budget Response: " + jsonString);
+  client.log("Saved budgetIdxBaseSalary: " + client.global.get("budgetIdxBaseSalary"));
+%}
+
+### 예산 추가 - 보너스 (B Bank) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "INCOME",
+  "amount": 100000.00,
+  "comment": "3월 보너스",
+  "transactionDate": "2025-03-02 09:00:00",
+  "accountIdx": {{accountIdxBBank}},
+  "categoryIdx": {{categoryIdxBonus}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxBonus", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Bonus Budget Response: " + jsonString);
+  client.log("Saved budgetIdxBonus: " + client.global.get("budgetIdxBonus"));
+%}
+
+### 예산 추가 - 추가보너스 (B Bank) (POST /budget)
+POST {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "INCOME",
+  "amount": 50000.00,
+  "comment": "3월 추가보너스",
+  "transactionDate": "2025-03-03 09:00:00",
+  "accountIdx": {{accountIdxBBank}},
+  "categoryIdx": {{categoryIdxExtraBonus}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("budgetIdxExtraBonus", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Extra Bonus Budget Response: " + jsonString);
+  client.log("Saved budgetIdxExtraBonus: " + client.global.get("budgetIdxExtraBonus"));
+%}
+
+### 예산 수정 - 식비 (A Card) (PUT /budget/{budgetIdx})
+PUT {{budget-host}}/budget/{{budgetIdxFoodACard}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "EXPENSE",
+  "amount": 9000.00,
+  "comment": "마트 장보기 + 추가 구매",
+  "transactionDate": "2025-03-01 10:00:00",
+  "accountIdx": {{accountIdxACard}},
+  "categoryIdx": {{categoryIdxFood}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Update Food A Card Budget Response: " + jsonString);
+%}
+
+### 예산 수정 - 기본급 (B Bank) (PUT /budget/{budgetIdx})
+PUT {{budget-host}}/budget/{{budgetIdxBaseSalary}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "type": "INCOME",
+  "amount": 420000.00,
+  "comment": "3월 기본급 (조정됨)",
+  "transactionDate": "2025-03-01 09:00:00",
+  "accountIdx": {{accountIdxBBank}},
+  "categoryIdx": {{categoryIdxBaseSalary}}
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Update Base Salary Budget Response: " + jsonString);
+%}
+
+### 예산 리스트 조회 (GET /budget)
+GET {{budget-host}}/budget
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Budget List Response: " + jsonString);
+%}
+
+### 분석 요청 - 기본급 (B Bank) (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "MONTHLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxBBank}}],
+  "categoryIdxList": [{{categoryIdxBaseSalary}}]
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Base Salary Response: " + jsonString);
+%}
+
+### 분석 요청 - 식비 (A Card) (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "WEEKLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxACard}}],
+  "categoryIdxList": [{{categoryIdxFood}}]
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Food A Card Response: " + jsonString);
+%}
+
+### 분석 요청 - 식비 (A Card) (POST /analyze) 2
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "WEEKLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [],
+  "categoryIdxList": [{{categoryIdxFood}}]
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Food A Card Response: " + jsonString);
+%}
+
+### 분석 요청 - 모든 계정, 모든 카테고리 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "MONTHLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [],
+  "categoryIdxList": []
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze All Response: " + jsonString);
+%}

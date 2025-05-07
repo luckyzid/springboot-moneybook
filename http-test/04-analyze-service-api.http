@@ -1,0 +1,99 @@
+### 분석 요청 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "MONTHLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxBank2}}],
+  "categoryIdxList": [{{childCategoryIdx21}}]
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Response: " + jsonString);
+%}
+
+### 분석 요청 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "WEEKLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxCard1}}],
+  "categoryIdxList": [{{childCategoryIdx12}}]
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Response: " + jsonString);
+%}
+
+### 분석 요청 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "WEEKLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxBank1}}],
+  "categoryIdxList": []
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Response: " + jsonString);
+%}
+
+### 분석 요청 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "MONTHLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [{{accountIdxCard2}}],
+  "categoryIdxList": []
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Response: " + jsonString);
+%}
+
+### 분석 요청 (POST /analyze)
+POST {{analyze-host}}/analyze
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "analysisType": "MONTHLY",
+  "startDate": "2025-03-01 00:00:00",
+  "accountIdxList": [],
+  "categoryIdxList": []
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Analyze Response: " + jsonString);
+%}

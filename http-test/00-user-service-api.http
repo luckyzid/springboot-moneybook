@@ -1,0 +1,172 @@
+#$uuid
+#$timestamp
+#$randomInt
+#$random.integer(1, 100)
+#$random.float(1.0, 100.0)
+#$random.alphabetic(10)
+#$random.alphanumeric(10)
+#$random.hexadecimal(10)
+#$random.email
+#$exampleServer
+
+### 회원 가입 (POST /user/register) JSON.parse JSON.stringify
+POST {{user-host}}/user/register
+Content-Type: application/json
+
+{
+  "email": "{{$random.email}}",
+  "password": "password123",
+  "name": "JohnDoe"
+}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    const jsonString = JSON.stringify(response.body, null, 2);
+    client.log("Register Response: " + jsonString)
+    client.global.set("createEmail", response.body.data.email);
+%}
+
+### 이메일 로그인 (POST /user/login/email)
+POST {{user-host}}/user/login/email
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)
+
+{
+  "email": "{{createEmail}}",
+  "password": "password123"
+}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+    client.global.set("userToken", response.body.data.userToken);
+
+    const tokens = {
+        accessToken: client.global.get("accessToken"),
+        refreshToken: client.global.get("refreshToken"),
+        userToken: client.global.get("userToken")
+    };
+    const tokenString = JSON.stringify(tokens, null, 2);
+    client.log("Tokens: " + tokenString);
+%}
+
+### 토큰 갱신 (POST /user/token/refresh)
+POST {{user-host}}/user/token/refresh
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+    client.global.set("userToken", response.body.data.userToken);
+
+    const newTokens = {
+        newAccessToken: client.global.get("accessToken"),
+        newRefreshToken: client.global.get("refreshToken")
+    };
+    const newTokenString = JSON.stringify(newTokens, null, 2);
+    client.log("New Tokens: " + newTokenString);
+%}
+
+### 토큰 로그인 (POST /user/login/token)
+POST {{user-host}}/user/login/token
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)
+
+{
+  "token": "{{userToken}}"
+}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    const jsonString = JSON.stringify(response.body, null, 2);
+    client.log("Token Login Response: " + jsonString);
+%}
+
+### 사용자 이름 수정 (PUT /user/name)
+PUT {{user-host}}/user/name
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "JaneDoe"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Updated User Info: " + jsonString);
+%}
+
+### 사용자 비밀번호 수정 (PUT /user/password)
+PUT {{user-host}}/user/password
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currentPassword": "password123",
+  "newPassword": "newPassword456"
+}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    const jsonString = JSON.stringify(response.body, null, 2);
+    client.log("Updated User Info: " + jsonString);
+%}
+
+### 사용자 정보 확인 (GET /user/info)
+GET {{user-host}}/user/info
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+    if (response.status !== 200) {
+        throw new Error("Expected status 200 but got " + response.status);
+    }
+    const jsonString = JSON.stringify(response.body, null, 2);
+    client.log("User Info: " + jsonString);
+%}
+
+### 로그아웃 (POST /user/logout)
+#POST {{user-host}}/user/logout
+#Content-Type: application/json
+#Authorization: Bearer {{accessToken}}
+#
+#> {%
+#    if (response.status !== 200) {
+#        throw new Error("Expected status 200 but got " + response.status);
+#    }
+#    const jsonString = JSON.stringify(response.body, null, 2);
+#    client.log("Logout Response: " + jsonString);
+#%}
+
+### 사용자 삭제 (DELETE /user)
+#DELETE {{user-host}}/user
+#Content-Type: application/json
+#Authorization: Bearer {{accessToken}}
+#
+#> {%
+#    if (response.status !== 200) {
+#        throw new Error("Expected status 200 but got " + response.status);
+#    }
+#    const jsonString = JSON.stringify(response.body, null, 2);
+#    client.log("Delete Response: " + jsonString);
+#%}

@@ -1,0 +1,8 @@
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+    implementation project(path: ':moneybook-authentication', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redis', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redis-pubsub', configuration: 'default')
+}

@@ -1,0 +1,162 @@
+### 카테고리 추가 - 최상위 1 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Root {{$random.alphanumeric(10)}}",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("rootCategoryIdx1", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Root Category 1 Response: " + jsonString);
+  client.log("Saved rootCategoryIdx1: " + client.global.get("rootCategoryIdx1"));
+%}
+
+### 카테고리 추가 - 최상위 2 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Root {{$random.alphanumeric(10)}}",
+  "parentIdx": null,
+  "depth": 0
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("rootCategoryIdx2", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Root Category 2 Response: " + jsonString);
+  client.log("Saved rootCategoryIdx2: " + client.global.get("rootCategoryIdx2"));
+%}
+
+### 카테고리 추가 - 하위 1-1 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Child {{$random.alphanumeric(10)}}",
+  "parentIdx": {{rootCategoryIdx1}},
+  "depth": 1
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("childCategoryIdx11", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Child Category 1-1 Response: " + jsonString);
+  client.log("Saved childCategoryIdx11: " + client.global.get("childCategoryIdx11"));
+%}
+
+### 카테고리 추가 - 하위 1-2 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Child {{$random.alphanumeric(10)}}",
+  "parentIdx": {{rootCategoryIdx1}},
+  "depth": 1
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("childCategoryIdx12", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Child Category 1-2 Response: " + jsonString);
+  client.log("Saved childCategoryIdx12: " + client.global.get("childCategoryIdx12"));
+%}
+
+### 카테고리 추가 - 하위 2-1 (POST /category)
+POST {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Child {{$random.alphanumeric(10)}}",
+  "parentIdx": {{rootCategoryIdx2}},
+  "depth": 1
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("childCategoryIdx21", response.body.data.idx);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Child Category 2-1 Response: " + jsonString);
+  client.log("Saved childCategoryIdx21: " + client.global.get("childCategoryIdx21"));
+%}
+
+### 카테고리 수정 - 하위 1-1 (PUT /category/{categoryIdx})
+PUT {{category-host}}/category/{{childCategoryIdx11}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Updated Child {{$random.alphanumeric(10)}}",
+  "parentIdx": {{rootCategoryIdx1}},
+  "depth": 1
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Update Child Category 1-1 Response: " + jsonString);
+%}
+
+### 카테고리 리스트 (GET /category)
+GET {{category-host}}/category
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Category List Response: " + jsonString);
+%}
+
+### 카테고리 삭제 - 개별 하위 카테고리 (DELETE /category/{categoryIdx})
+#DELETE {{category-host}}/category/{{childCategoryIdx1}}
+#Content-Type: application/json
+#Authorization: Bearer {{accessToken}}
+#
+#> {%
+#    if (response.status !== 200) {
+#        throw new Error("Expected status 200 but got " + response.status);
+#    }
+#    const jsonString = JSON.stringify(response.body, null, 2);
+#    client.log("Delete Child Category 1 Response: " + jsonString);
+#%}
+
+### 카테고리 삭제 - 상위 카테고리와 하위 모두 삭제 (DELETE /category/{categoryIdx})
+#DELETE {{category-host}}/category/{{rootCategoryIdx1}}
+#Content-Type: application/json
+#Authorization: Bearer {{accessToken}}
+#
+#> {%
+#    if (response.status !== 200) {
+#        throw new Error("Expected status 200 but got " + response.status);
+#    }
+#    const jsonString = JSON.stringify(response.body, null, 2);
+#    client.log("Delete Parent Category (with children) Response: " + jsonString);
+#%}

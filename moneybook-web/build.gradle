@@ -1,0 +1,12 @@
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+    implementation project(path: ':moneybook-common', configuration: 'default')
+
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${swaggerVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.apache.httpcomponents.client5:httpclient5:${httpclient5Version}"
+}

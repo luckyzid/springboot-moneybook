@@ -1,0 +1,7 @@
+bootJar.enabled = false
+jar.enabled = true
+
+dependencies {
+    implementation project(path: ':moneybook-infra-ehcache', configuration: 'default')
+    implementation project(path: ':moneybook-infra-redisson', configuration: 'default')
+}

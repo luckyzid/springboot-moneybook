@@ -1,0 +1,124 @@
+### 매니저 회원 가입 (POST /user/register)
+POST {{user-host}}/user/register
+Content-Type: application/json
+
+{
+  "email": "{{$random.alphabetic(10)}}@email.com",
+  "password": "password123",
+  "name": "JohnDoe"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Manager Register Response: " + jsonString)
+  client.global.set("createEmail", response.body.data.email);
+%}
+
+### 이메일 로그인 (POST /user/login/email)
+POST {{user-host}}/user/login/email
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)
+
+{
+  "email": "{{createEmail}}",
+  "password": "password123"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("accessToken", response.body.data.accessToken);
+  client.global.set("refreshToken", response.body.data.refreshToken);
+  client.global.set("userToken", response.body.data.userToken);
+
+  const tokens = {
+    accessToken: client.global.get("accessToken"),
+    refreshToken: client.global.get("refreshToken"),
+    userToken: client.global.get("userToken")
+  };
+  const tokenString = JSON.stringify(tokens, null, 2);
+  client.log("Tokens: " + tokenString);
+%}
+
+### 단축 URL 추가 (POST /shorturl/manager)
+POST {{shorturl-host}}/shorturl/manager
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "originalUrl": "https://example.com"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  client.global.set("shortKey", response.body.data.shortKey);
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Add Short URL Response: " + jsonString);
+  client.log("Saved shortKey: " + client.global.get("shortKey"));
+%}
+
+### 단축 URL 조회 (GET /shorturl/manager/{shortKey})
+GET {{shorturl-host}}/shorturl/manager/{{shortKey}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Get Short URL Response: " + jsonString);
+%}
+
+### 단축 URL 리스트 조회 (GET /shorturl/manager)
+GET {{shorturl-host}}/shorturl/manager
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Get Short URL List Response: " + jsonString);
+  if (response.body.length > 0) {
+    client.log("First shortKey in list: " + response.body[0].shortKey);
+  }
+%}
+
+### 단축 URL 수정 (PUT /shorturl/manager/{shortKey})
+PUT {{shorturl-host}}/shorturl/manager/{{shortKey}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "originalUrl": "https://newexample.com",
+  "expireDate": "2025-04-08 12:00:00"
+}
+
+> {%
+  if (response.status !== 200) {
+    throw new Error("Expected status 200 but got " + response.status);
+  }
+  const jsonString = JSON.stringify(response.body, null, 2);
+  client.log("Update Short URL Response: " + jsonString);
+%}
+
+### 단축 URL 삭제 (DELETE /shorturl/manager/{shortKey})
+#DELETE {{shorturl-host}}/shorturl/manager/{{shortKey}}
+#Content-Type: application/json
+#Authorization: Bearer {{accessToken}}
+#
+#> {%
+#  if (response.status !== 200) {
+#    throw new Error("Expected status 200 but got " + response.status);
+#  }
+#  const jsonString = JSON.stringify(response.body, null, 2);
+#  client.log("Delete Short URL Response: " + jsonString);
+#%}

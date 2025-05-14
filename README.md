@@ -272,6 +272,7 @@ NoSQL 데이터베이스 관리 모듈
 - **중앙 설정**: `moneybook-config` 모듈의 `src/main/resources/application.properties`에서 기본 설정 정의
 - **서비스별 설정**: 각 서비스 모듈의 `src/main/resources/application.properties`에서 중앙 설정 오버라이드
 - **환경 변수**: 필요 시 시스템 환경 변수 또는 Docker Compose에서 설정 값 주입
+- **Oauth2 설정**: `moneybook-service-user` 모듈의 `src/main/resources/application-local.properties`에서 `spring.security.oauth2` 설정 업데이트
 
 ---
 

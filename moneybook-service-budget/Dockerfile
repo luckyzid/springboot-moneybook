@@ -5,7 +5,7 @@ ENV SPRING_PROFILES_ACTIVE ${stage}
 
 RUN apk add --no-cache bash curl
 
-COPY ./kr.money.book.auth.filter.build/libs/*.jar app.jar
+COPY ./build/libs/*.jar app.jar
 RUN touch /app.jar
 
 EXPOSE 8280 18280

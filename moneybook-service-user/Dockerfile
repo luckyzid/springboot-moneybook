@@ -8,7 +8,7 @@ RUN apk add --no-cache bash curl
 COPY ./build/libs/*.jar app.jar
 RUN touch /app.jar
 
-EXPOSE 8080 8180
+EXPOSE 8080 18080
 
 # java -Xshare:dump
 

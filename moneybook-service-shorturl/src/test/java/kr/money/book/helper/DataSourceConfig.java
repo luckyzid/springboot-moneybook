@@ -94,7 +94,7 @@ public class DataSourceConfig {
     @Bean
     @Primary
     public MongoClient mongoClient() {
-        String connectionString = "mongodb://localhost:27017,localhost:27018,localhost:27019/test_shorturl_db?replicaSet=rs0&retryWrites=true";
+        String connectionString = "mongodb://192.168.50.214:27017,192.168.50.214:27018,192.168.50.214:27019/test_shorturl_db?replicaSet=rs0&retryWrites=true";
 
         MongoClientSettings settings = MongoClientSettings.builder()
             .applyConnectionString(new ConnectionString(connectionString))

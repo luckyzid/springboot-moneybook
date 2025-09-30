@@ -9,7 +9,7 @@ networks:
 
 services:
   moneybook-cluster-master:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     restart: always
@@ -31,7 +31,7 @@ services:
       retries: 6
 
   moneybook-cluster-slave:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     depends_on:
@@ -59,7 +59,7 @@ services:
       retries: 6
 
   moneybook-shard-0-master:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     restart: always
@@ -81,7 +81,7 @@ services:
       retries: 6
 
   moneybook-shard-0-slave:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     depends_on:
@@ -109,7 +109,7 @@ services:
       retries: 6
 
   moneybook-shard-1-master:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     restart: always
@@ -131,7 +131,7 @@ services:
       retries: 6
 
   moneybook-shard-1-slave:
-    image: bitnami/mysql:8.4
+    image: bitnamilegacy/mysql:8.4
     networks:
       - moneybook-network
     depends_on:

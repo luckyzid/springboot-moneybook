@@ -169,3 +169,21 @@ CREATE TABLE IF NOT EXISTS mb_budget_account
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS ab_test_event
+(
+    id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'PK',
+    experiment_key  VARCHAR(100)    NOT NULL COMMENT '실험 키',
+    variant         VARCHAR(50)     NOT NULL COMMENT '배정된 Variant',
+    user_id         BIGINT UNSIGNED NOT NULL COMMENT '사용자 ID',
+    condition_name  VARCHAR(150)    NOT NULL COMMENT 'Condition 클래스명',
+    allocator_name  VARCHAR(150)    NOT NULL COMMENT 'Allocator 클래스명',
+    attributes_json TEXT                     DEFAULT NULL COMMENT '사용자 속성 JSON',
+    assigned_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '배정 시점',
+    PRIMARY KEY (id),
+    KEY idx_ab_test_event_experiment_key (experiment_key),
+    KEY idx_ab_test_event_user_id (user_id),
+    KEY idx_ab_test_event_assigned_at (assigned_at)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;

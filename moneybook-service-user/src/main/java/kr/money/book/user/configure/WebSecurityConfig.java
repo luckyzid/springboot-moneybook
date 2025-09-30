@@ -46,16 +46,6 @@ public class WebSecurityConfig extends WebSecurityConfigWrapper {
         return new BCryptPasswordEncoder();
     }
 
-    private RequestMatcher[] additionalWhitelist() {
-
-        return new RequestMatcher[]{
-            new AntPathRequestMatcher("/login/oauth2/**"),
-            new AntPathRequestMatcher("/user/login/**"),
-            new AntPathRequestMatcher("/user/register"),
-            new AntPathRequestMatcher("/user/token/refresh"),
-        };
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -71,13 +61,22 @@ public class WebSecurityConfig extends WebSecurityConfigWrapper {
                 .authorizationEndpoint(auth -> auth.baseUri(oauthLoginEndPoint))
                 .userInfoEndpoint(user -> user.userService(oAuth2CustomUserService))
                 .successHandler(oAuth2AuthenticationSuccessHandler))
-            .addFilterBefore(new TokenAuthenticationRedisFilter(authenticationRedisService),
-                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new TokenAuthenticationRedisFilter(authenticationRedisService), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new TokenExceptionFilter(), TokenAuthenticationRedisFilter.class)
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(new AuthenticationCustomEntryPoint())
                 .accessDeniedHandler(new AccessDeniedCustomHandler()));
 
         return http.build();
+    }
+
+    private RequestMatcher[] additionalWhitelist() {
+
+        return new RequestMatcher[]{
+                new AntPathRequestMatcher("/login/oauth2/**"),
+                new AntPathRequestMatcher("/user/login/**"),
+                new AntPathRequestMatcher("/user/register"),
+                new AntPathRequestMatcher("/user/token/refresh"),
+        };
     }
 }

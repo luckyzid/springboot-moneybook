@@ -6,6 +6,7 @@ dependencies {
     implementation project(path: ':moneybook-authentication', configuration: 'default')
     implementation project(path: ':moneybook-authentication-redis', configuration: 'default')
     implementation project(path: ':moneybook-infra-rds', configuration: 'default')
+    implementation project(path: ':moneybook-infra-abtest', configuration: 'default')
     implementation project(path: ':moneybook-infra-redis', configuration: 'default')
     implementation project(path: ':moneybook-infra-redis-pubsub', configuration: 'default')
     implementation project(path: ':moneybook-infra-redisson', configuration: 'default')

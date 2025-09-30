@@ -1,6 +1,14 @@
 package kr.money.book.account.web.application;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import kr.money.book.abtest.allocator.RandomAbTestVariantAllocator;
+import kr.money.book.abtest.annotation.AbTest;
+import kr.money.book.abtest.condition.ModNUserSegmentationCondition;
+import kr.money.book.abtest.context.AbTestContext;
+import kr.money.book.abtest.strategy.ReuseExistingAssignmentStrategy;
+import kr.money.book.account.web.domain.command.AccountListAbTestCommand;
 import kr.money.book.account.web.domain.valueobject.AccountInfo;
 import kr.money.book.account.web.exceptions.AccountException;
 import kr.money.book.account.web.infra.AccountAuthenticationService;
@@ -56,9 +64,25 @@ public class AccountService {
         readOnly = true,
         rollbackFor = Exception.class
     )
-    public List<AccountInfo> getAccountList(String userKey) {
+    @AbTest(
+        experimentKey = "account.list.strategy",
+        allocator = RandomAbTestVariantAllocator.class,
+        condition = ModNUserSegmentationCondition.class,
+        reuseStrategy = ReuseExistingAssignmentStrategy.class
+    )
+    public List<AccountInfo> getAccountList(AccountListAbTestCommand command) {
 
-        return accountPersistenceAdapter.findAccountsByUserKey(userKey);
+        String userKey = command.userKey();
+        List<AccountInfo> accounts = accountPersistenceAdapter.findAccountsByUserKey(userKey);
+
+        if (!isControlGroup()) {
+            return accounts;
+        }
+
+        return accounts.stream()
+            .findFirst()
+            .map(account -> Collections.singletonList(loadAccountDetail(account)))
+            .orElseGet(Collections::emptyList);
     }
 
     @Transactional(
@@ -109,5 +133,23 @@ public class AccountService {
 
         List<AccountInfo> accounts = accountPersistenceAdapter.findAccountsByUserKey(userKey);
         accountAuthenticationService.syncCacheInform(userKey, accounts);
+    }
+
+    private boolean isControlGroup() {
+
+        return Optional.ofNullable(AbTestContext.currentVariant())
+            .map(variant -> variant.equalsIgnoreCase("control"))
+            .orElse(false);
+    }
+
+    private AccountInfo loadAccountDetail(AccountInfo account) {
+
+        Long accountIdx = account.idx();
+        if (accountIdx == null) {
+            return account;
+        }
+
+        return accountPersistenceAdapter.findByUserKeyAndAccountIdx(account.userKey(), accountIdx)
+            .orElseThrow(() -> new AccountException(AccountException.ErrorCode.ACCOUNT_NOT_FOUND));
     }
 }

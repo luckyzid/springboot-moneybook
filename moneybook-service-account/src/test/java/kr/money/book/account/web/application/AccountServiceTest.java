@@ -10,12 +10,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import kr.money.book.common.constants.AccountType;
+import kr.money.book.account.web.domain.command.AccountListAbTestCommand;
 import kr.money.book.account.web.domain.valueobject.AccountInfo;
 import kr.money.book.account.web.exceptions.AccountException;
 import kr.money.book.account.web.infra.AccountAuthenticationService;
 import kr.money.book.account.web.infra.AccountPersistenceAdapter;
+import kr.money.book.abtest.context.AbTestAssignment;
+import kr.money.book.abtest.context.AbTestContextHolder;
+import kr.money.book.abtest.context.AbTestUserContext;
 import kr.money.book.utils.StringUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,10 +126,51 @@ public class AccountServiceTest {
 
         when(accountPersistenceAdapter.findAccountsByUserKey(randomUserKey)).thenReturn(List.of(testAccount));
 
-        List<AccountInfo> result = accountService.getAccountList(randomUserKey);
+        List<AccountInfo> result = accountService.getAccountList(AccountListAbTestCommand.of(randomUserKey));
 
         assertEquals(1, result.size());
         assertEquals(accountName, result.get(0).name());
+    }
+
+    @Test
+    void 계좌목록조회_AB테스트_대조군은_getAccount_결과반환() {
+        AccountInfo summaryAccount = AccountInfo.builder()
+            .idx(1l)
+            .userKey(randomUserKey)
+            .name(accountName)
+            .type(AccountType.BANK)
+            .build();
+        AccountInfo detailedAccount = AccountInfo.builder()
+            .idx(1l)
+            .userKey(randomUserKey)
+            .name("Detailed" + accountName)
+            .type(AccountType.BANK)
+            .build();
+
+        when(accountPersistenceAdapter.findAccountsByUserKey(randomUserKey)).thenReturn(List.of(summaryAccount));
+        when(accountPersistenceAdapter.findByUserKeyAndAccountIdx(randomUserKey, 1l))
+            .thenReturn(Optional.of(detailedAccount));
+
+        AbTestAssignment assignment = AbTestAssignment.builder()
+            .experimentKey("account.list.strategy")
+            .variant("control")
+            .userContext(AbTestUserContext.builder()
+                .userId(1L)
+                .attributes(Map.of())
+                .build())
+            .build();
+
+        AbTestContextHolder.setAssignment(assignment);
+        try {
+            List<AccountInfo> result = accountService.getAccountList(AccountListAbTestCommand.of(randomUserKey));
+
+            assertEquals(1, result.size());
+            assertEquals(detailedAccount.name(), result.get(0).name());
+        } finally {
+            AbTestContextHolder.clear();
+        }
+
+        verify(accountPersistenceAdapter).findByUserKeyAndAccountIdx(randomUserKey, 1l);
     }
 
     @Test

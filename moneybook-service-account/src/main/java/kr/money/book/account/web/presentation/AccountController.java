@@ -5,15 +5,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import kr.money.book.account.web.application.AccountService;
+import kr.money.book.account.web.domain.command.AccountListAbTestCommand;
 import kr.money.book.account.web.domain.datatransfer.AccountCreateRequest;
 import kr.money.book.account.web.domain.datatransfer.AccountCreateResponse;
-import kr.money.book.account.web.domain.datatransfer.AccountInfoList;
 import kr.money.book.account.web.domain.datatransfer.AccountInfoListResponse;
 import kr.money.book.account.web.domain.datatransfer.AccountInfoResponse;
 import kr.money.book.account.web.domain.datatransfer.AccountUpdateRequest;
 import kr.money.book.account.web.domain.datatransfer.AccountUpdateResponse;
 import kr.money.book.account.web.domain.valueobject.AccountInfo;
-import kr.money.book.common.valueobject.CacheAccount;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +41,7 @@ public class AccountController {
         Authentication authentication) {
 
         String userKey = authentication.getName();
-        List<AccountInfo> accounts = accountService.getAccountList(userKey);
+        List<AccountInfo> accounts = accountService.getAccountList(AccountListAbTestCommand.of(userKey));
 
         return ResponseEntity.ok(AccountInfoListResponse.of(accounts));
     }
